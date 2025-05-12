@@ -20,7 +20,10 @@ model User{
   email       String   @unique
   username    String
   password    String
-  socialLinks  Links[]
+  socialLinks Links[]
+  profilepic  String?
+  bio         String?
+
 }
 
 model Links {
@@ -28,5 +31,5 @@ model Links {
   url       String
   platform  String
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

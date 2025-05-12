@@ -1,12 +1,6 @@
-// middleware.js
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
 
-if (!JWT_SECRET) {
-  console.warn("Warning: JWT_SECRET is not set in the environment variables!");
-}
-
-// Middleware for Authentication (checking if user is logged in via JWT)
 const authenticate = (req, res, next) => {
   const authHeader = req.header("Authorization");
 
@@ -18,12 +12,20 @@ const authenticate = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // Storing decoded user data in request
+    console.log("Decoded JWT:", decoded);
+
+    if (!decoded.userId) {
+      return res.status(401).json({ error: "Unauthorized. User ID not found in token." });
+    }
+
+    req.user = { id: decoded.userId }; // ✅ Make this consistent
+
     next();
   } catch (err) {
     console.error("JWT error:", err.message);
     res.status(401).json({ message: "Invalid Token" });
   }
 };
+
 
 module.exports = { authenticate };

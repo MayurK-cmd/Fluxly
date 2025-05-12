@@ -1,11 +1,12 @@
+// auth.js
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
 const dotenv = require("dotenv");
-const { authenticate } = require("./middleware"); // Import the authenticate middleware
 
 dotenv.config();
+
 const prisma = new PrismaClient();
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -18,13 +19,13 @@ router.post("/signup", async (req, res) => {
   const { email, username, password } = req.body;
 
   if (!email || !username || !password) {
-    return res.status(400).json({ message: "Email, user name, and password are required" });
+    return res.status(400).json({ message: "Email, username, and password are required." });
   }
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
 
   if (existingUser) {
-    return res.status(400).json({ message: "User with this email already exists" });
+    return res.status(400).json({ message: "User with this email already exists." });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,7 +34,10 @@ router.post("/signup", async (req, res) => {
     data: { email, username, password: hashedPassword },
   });
 
-  res.status(201).json({ message: "User created successfully", user: { email: user.email, username: user.username } });
+  res.status(201).json({
+    message: "User created successfully",
+    user: { id: user.id, email: user.email, username: user.username },
+  });
 });
 
 router.post("/login", async (req, res) => {
