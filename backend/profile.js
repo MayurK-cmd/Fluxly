@@ -12,7 +12,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 
 // POST /profile - Add or update profile picture and bio
-// POST /profile - Add or update profile picture and bio
 router.post("/profile", authenticate, async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
@@ -54,6 +53,11 @@ router.get("/profile", authenticate, async (req, res) => {
       },
     });
 
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve profile" });
@@ -84,12 +88,12 @@ router.delete("/profile", authenticate, async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    // ✅ Delete related links first
-    await prisma.Link.deleteMany({
+    
+    await prisma.links.deleteMany({
       where: { userId },
     });
 
-    // ✅ Now delete user
+  
     await prisma.user.delete({
       where: { id: userId },
     });
