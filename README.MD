@@ -1,4 +1,4 @@
-# Social Dashboard Application
+# Fuxly
 
 A full-stack social media dashboard application that allows users to manage their social media profiles and view aggregated content.
 
